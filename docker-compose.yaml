@@ -1,0 +1,45 @@
+# kebutuhan spin up database lokal aja. File ini bisa diabaikan karena nanti akan ada dev DB sendiri 
+services:
+  pg-svc:
+    container_name: pg-svc
+    image: postgres:18
+    env_file:
+      - .env
+    expose:
+      - 5432
+    ports:
+      - 9003:5432
+    networks:
+      - my-network
+    volumes:
+      - pg-svc-vol:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL",  "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      retries: 3
+      timeout: 5s
+      interval: 10s
+
+  redis:
+    container_name: redis
+    image: redis
+    expose:
+      - 6379
+    ports:
+      - 6666:6379
+    networks:
+      - my-network
+    volumes:
+      - redis-vol:/data
+    healthcheck:
+      test: ["CMD-SHELL",  "redis-cli ping"]
+      retries: 3
+      timeout: 5s
+      interval: 10s
+
+networks:
+  my-network:
+
+volumes:
+  pg-svc-vol: 
+  redis-vol: 
+  
